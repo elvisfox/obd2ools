@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+import serial
+import io
+import threading
+import time
+
+from elm327emu.elm327emu import *
+from elm327reader.elm327reader import *
+
+r_stream = io.BytesIO()
+w_stream = io.BytesIO()
+
+sio_elm = io.TextIOWrapper(io.BufferedRWPair(w_stream, r_stream, 1), encoding='ascii', newline='\r')
+sio_rdr = io.TextIOWrapper(io.BufferedRWPair(r_stream, w_stream, 1), encoding='ascii', newline='\r')
+
+class StoppableThread(threading.Thread):
+
+	def __init__(self):
+		super(StoppableThread, self).__init__()
+		self.should_live = 1
+	
+	def run(self):
+		while self.should_live == 1:
+			time.sleep(0.01)
+
+	def stop(self):
+		self.should_live = 0
+
+
+# run elm327 thread
+th_elm = elm327emu(sio_elm)
+th_elm.start()
+
+# run reader thread
+th_rdr = elm327reader(sio_rdr)
+th_rdr.start()
+
+# loop until ctrl+c
+try:
+	while th_elm.is_alive() and th_rdr.is_alive():
+		time.sleep(0.05)
+except KeyboardInterrupt:
+    pass
+
+print('\nexiting...\n')
+
+# shutdown threads
+th_elm.stop()
+th_rdr.stop()

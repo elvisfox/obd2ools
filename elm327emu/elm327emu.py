@@ -1,11 +1,5 @@
-#!/usr/bin/env python3
-
-import serial
 import io
-
-# configuration
-portName = '/dev/tty.Bluetooth-Incoming-Port'
-use_protocol = 6
+import threading
 
 # PIDS list (vendor specific for Nissan/Infiniti)
 pids_list = [	[0x07E806,	'0100',		'00000000'	],
@@ -33,104 +27,102 @@ pids_list = [	[0x07E806,	'0100',		'00000000'	],
 				[0x07E7E0,	'221313',	'0008'		],		# Cooling Fan Low / High ???
 			]
 
-# open port
-ser = serial.Serial(portName, timeout=0.05)
+use_protocol = 6
 
-# create IO wrapper
-sio = io.TextIOWrapper(io.BufferedRWPair(ser, ser, 1), encoding='ascii', newline='\r')
+class elm327emu(threading.Thread):
 
-# OBD state defaults
-protocol = use_protocol
-headers_on = 1
-header = 0x07E806
-timeout = 0
+    def reset(self):
+        # OBD state defaults
+        self.protocol = use_protocol
+        self.headers_on = 1
+        self.header = 0x07E806
+        self.timeout = 0
 
-try:
-    while True:
+    def __init__(self, stream):
+        super().__init__()
+        self.should_live = 1
+        self.sio = stream
+        self.reset()
+    
+    def run(self):
+        while self.should_live == 1:
+            # get command from the port
+            cmd = self.sio.readline()
 
-        # get command from the port
-        cmd = sio.readline()
+            if len(cmd) == 0:
+                continue
 
-        if len(cmd) == 0:
-        	continue
+            # print command
+            print('recv: '+cmd)
 
-        # print command
-        print('recv: '+cmd)
+            # default answer is empty
+            ans = ''
 
-        # default answer is empty
-        ans = ''
+            # process AT commands
+            if cmd[:2] == 'AT':
+                # remove AT and \r
+                sub = cmd[2:-1]
+                #print(sub)
 
-        # process AT commands
-        if cmd[:2] == 'AT':
-        	# remove AT and \r
-        	sub = cmd[2:-1]
-        	#print(sub)
+                if sub == 'Z':
+                    self.reset()
+                    ans = 'ELM327 v1.5'
+                elif sub == 'I':
+                    ans = 'ELM327 v1.5'
+                elif sub == '@1':
+                    ans = 'OBDII to RS232 Interpreter'
+                elif sub in ['L0', 'M0', 'E0', 'AT1', 'AT0', 'AT2', 'S0', 'PC']:
+                    ans = 'OK'
+                elif sub == 'DPN':          # respond protocol number
+                    ans = str(protocol)
+                elif sub[:2] == 'ST':
+                    timeout = int(sub[2:])
+                    print('  Timeout changed to '+str(timeout))
+                    ans = 'OK'
+                elif sub[:2] == 'SP':
+                    protocol = int(sub[2:])
+                    print('  Protocol changed to '+str(protocol))
+                    ans = 'OK'
+                elif sub[:1] == 'H':
+                    headers_on = int(sub[1:])
+                    print('  Headers_on changed to '+str(headers_on))
+                    ans = 'OK'
+                elif sub[:4] == ' SH ':
+                    header = (header & 0xFFF000) | (int('0x'+sub[4:], 16) & 0x000FFF)
+                    print('  Header changed to '+hex(header))
+                    ans = 'OK'
+                else:
+                    print('  Unsupported command!')
+                    ans = 'ERROR'
+            elif cmd != '\r':
+                # check used protocol
+                if protocol != use_protocol:
+                    ans = 'UNABLE TO CONNECT'
+                else:
+                    # default answer is now 'NO DATA'
+                    ans = 'NO DATA'
 
-        	if sub == 'Z':
-        		protocol = use_protocol
-        		header = 0x07E806
-        		ans = 'ELM327 v1.5'
-        	elif sub == 'I':
-        		ans = 'ELM327 v1.5'
-        	elif sub == '@1':
-        		ans = 'OBDII to RS232 Interpreter'
-        	elif sub in ['L0', 'M0', 'E0', 'AT1', 'AT0', 'AT2', 'S0', 'PC']:
-        		ans = 'OK'
-        	elif sub == 'DPN':			# respond protocol number
-        		ans = str(protocol)
-        	elif sub[:2] == 'ST':
-        		timeout = int(sub[2:])
-        		print('  Timeout changed to '+str(timeout))
-        		ans = 'OK'
-        	elif sub[:2] == 'SP':
-        		protocol = int(sub[2:])
-        		print('  Protocol changed to '+str(protocol))
-        		ans = 'OK'
-        	elif sub[:1] == 'H':
-        		headers_on = int(sub[1:])
-        		print('  Headers_on changed to '+str(headers_on))
-        		ans = 'OK'
-        	elif sub[:4] == ' SH ':
-        		header = (header & 0xFFF000) | (int('0x'+sub[4:], 16) & 0x000FFF)
-        		print('  Header changed to '+hex(header))
-        		ans = 'OK'
-        	else:
-        		print('  Unsupported command!')
-        		ans = 'ERROR'
-        elif cmd != '\r':
-        	# check used protocol
-        	if protocol != use_protocol:
-        		ans = 'UNABLE TO CONNECT'
-        	else:
-        		# default answer is now 'NO DATA'
-        		ans = 'NO DATA'
+                    # remove \r
+                    sub = cmd[:-1]
 
-        		# remove \r
-        		sub = cmd[:-1]
+                    # process the list of pids
+                    for pid in pids_list:
+                        if pid[0] == header and pid[1] == sub:
+                            # prepare the reponse
+                            ans = format(int('0x'+sub[:1], 16) | 4, 'X') + sub[1:] + pid[2]
 
-        		# process the list of pids
-        		for pid in pids_list:
-        			if pid[0] == header and pid[1] == sub:
-        				# prepare the reponse
-        				ans = format(int('0x'+sub[:1], 16) | 4, 'X') + sub[1:] + pid[2]
+                            # now add a header if needed
+                            if headers_on:
+                                ans = format(header, 'X') + ans
 
-        				# now add a header if needed
-        				if headers_on:
-        					ans = format(header, 'X') + ans
+                            break
 
-        				break
+            # print response
+            print('  send: '+ans)
 
-        # print response
-        print('  send: '+ans)
+            # new line character
+            self.sio.write(ans+'\r\r>')
+            self.sio.flush()
 
-        # new line character
-        sio.write(ans+'\r\r>')
-        sio.flush()
-
-except KeyboardInterrupt:
-    pass
-
-print('\nexiting...\n')
-
-# close port
-ser.close()
+    def stop(self):
+        self.should_live = 0
