@@ -53,7 +53,7 @@ class elm327emu(threading.Thread):
                 continue
 
             # print command
-            print('recv: '+cmd)
+            print('recv: ' + cmd)
 
             # default answer is empty
             ans = ''
@@ -118,7 +118,7 @@ class elm327emu(threading.Thread):
                             break
 
             # print response
-            print('  send: '+ans)
+            print('  send: ' + ans)
 
             # new line character
             self.sio.write(ans+'\r\r>')

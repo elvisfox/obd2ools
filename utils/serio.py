@@ -8,20 +8,23 @@ class IOLoop():
         self.queue = queue.Queue()
 
     def write(self, data):
-        for b in data
+        for b in data:
             self.queue.put(bytes([b]))
+        return len(data)
 
     def flush(self):
         pass
 
-    def read(self, maxlen = -1)
+    def read(self, maxlen = -1):
         data = b''
         try:
             while ((maxlen == -1 and len(data) == 0) or len(data)<maxlen):
-                c = queue.get(block=True, timeout=self.timeout)
+                c = self.queue.get(block=True, timeout=self.timeout)
                 data = data + c
-        except Empty:
+        except queue.Empty:
             pass
+
+        return data
 
 class SerIO():
 
@@ -32,7 +35,7 @@ class SerIO():
 
     def write(self, data):
         n = self.w_stream.write(bytes(data, 'ascii'))
-        print('wrote '+format(n,'d')+' bytes: ' + data + '\n')
+        #print('wrote '+format(n,'d')+' bytes: ' + data + '\n')
         self.w_stream.flush()
 
     def readline(self):

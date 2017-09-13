@@ -9,14 +9,14 @@ class elm327reader(threading.Thread):
         self.sio.write(cmd+'\r')
         #self.sio.flush()
 
-        time.sleep(0.05)
+        print('cmd: ' + cmd)
 
         resp = self.sio.readline()
 
         # leave only part until \r
         resp = resp.split('\r')[0]
 
-        print('got: '+resp+'\n')
+        print('  got: ' + resp + '\n')
 
         return resp
 

@@ -9,11 +9,11 @@ from utils.serio import *
 from elm327emu.elm327emu import *
 from elm327reader.elm327reader import *
 
-r_stream = io.BytesIO()
-w_stream = io.BytesIO()
+r_stream = IOLoop(0.1)
+w_stream = IOLoop(0.1)
 
-sio_elm = SerIO(w_stream, r_stream, '\r')
-sio_rdr = SerIO(r_stream, w_stream, '>')
+sio_elm = SerIO(w_stream, r_stream, b'\r')
+sio_rdr = SerIO(r_stream, w_stream, b'>')
 
 class StoppableThread(threading.Thread):
 
