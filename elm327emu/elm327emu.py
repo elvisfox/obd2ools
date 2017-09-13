@@ -122,7 +122,7 @@ class elm327emu(threading.Thread):
 
             # new line character
             self.sio.write(ans+'\r\r>')
-            self.sio.flush()
+            #self.sio.flush()
 
     def stop(self):
         self.should_live = 0

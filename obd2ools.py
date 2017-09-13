@@ -5,14 +5,15 @@ import io
 import threading
 import time
 
+from utils.serio import *
 from elm327emu.elm327emu import *
 from elm327reader.elm327reader import *
 
 r_stream = io.BytesIO()
 w_stream = io.BytesIO()
 
-sio_elm = io.TextIOWrapper(io.BufferedRWPair(w_stream, r_stream, 1), encoding='ascii', newline='\r')
-sio_rdr = io.TextIOWrapper(io.BufferedRWPair(r_stream, w_stream, 1), encoding='ascii', newline='\r')
+sio_elm = SerIO(w_stream, r_stream, '\r')
+sio_rdr = SerIO(r_stream, w_stream, '>')
 
 class StoppableThread(threading.Thread):
 
