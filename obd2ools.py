@@ -9,6 +9,8 @@ from utils.serio import *
 from elm327emu.elm327emu import *
 from elm327reader.elm327reader import *
 
+from config import *
+
 r_stream = IOLoop(0.1)
 w_stream = IOLoop(0.1)
 
@@ -31,10 +33,13 @@ class StoppableThread(threading.Thread):
 
 # run elm327 thread
 th_elm = elm327emu(sio_elm)
+th_elm.pids_list = pids_list
 th_elm.start()
 
 # run reader thread
 th_rdr = elm327reader(sio_rdr)
+th_rdr.import_pids(pids_list, selected_pids)
+th_rdr.readout_interval = interval
 th_rdr.start()
 
 # loop until ctrl+c
