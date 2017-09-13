@@ -11,25 +11,6 @@ from elm327reader.elm327reader import *
 
 from config import *
 
-r_stream = IOLoop(0.1)
-w_stream = IOLoop(0.1)
-
-sio_elm = SerIO(w_stream, r_stream, b'\r')
-sio_rdr = SerIO(r_stream, w_stream, b'>')
-
-class StoppableThread(threading.Thread):
-
-	def __init__(self):
-		super(StoppableThread, self).__init__()
-		self.should_live = 1
-	
-	def run(self):
-		while self.should_live == 1:
-			time.sleep(0.01)
-
-	def stop(self):
-		self.should_live = 0
-
 # open logfiles
 f_dbg = None
 f_log = None
@@ -40,10 +21,23 @@ if dbg_logfile:
 if data_logfile:
 	f_log = open(data_logfile, 'w')
 
-# run elm327 thread
-th_elm = elm327emu(sio_elm, f_dbg)
-th_elm.pids_list = pids_list
-th_elm.start()
+ser = None
+th_elm = None
+
+if port_name == 'loop':
+	r_stream = IOLoop(0.1)
+	w_stream = IOLoop(0.1)
+
+	sio_elm = SerIO(w_stream, r_stream, b'\r')
+	sio_rdr = SerIO(r_stream, w_stream, b'>')
+
+	# run elm327 thread
+	th_elm = elm327emu(sio_elm, f_dbg)
+	th_elm.pids_list = pids_list
+	th_elm.start()
+else:
+	ser = serial.Serial(port_name, timeout=0.1)
+	sio_rdr = SerIO(ser, ser, b'>')
 
 # run reader thread
 th_rdr = elm327reader(sio_rdr, f_log, f_dbg)
@@ -53,7 +47,7 @@ th_rdr.start()
 
 # loop until ctrl+c
 try:
-	while th_elm.is_alive() and th_rdr.is_alive():
+	while th_rdr.is_alive():
 		time.sleep(0.05)
 except KeyboardInterrupt:
     pass
@@ -61,13 +55,16 @@ except KeyboardInterrupt:
 print('\nexiting...\n')
 
 # shutdown threads
-th_elm.stop()
 th_rdr.stop()
-
-th_elm.join()
 th_rdr.join()
 
+if th_elm:
+	th_elm.stop()
+	th_elm.join()
+
 # close files
+if ser:
+	ser.close()
 if f_dbg:
 	f_dbg.close()
 if f_log:

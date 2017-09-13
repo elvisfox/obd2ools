@@ -2,6 +2,8 @@ import time
 
 from pids.nissan import *
 
+# use 'loop' to run with emulator
+port_name = 'loop'
 
 pids_list = []
 pids_list = pids_list + nissan_pids
