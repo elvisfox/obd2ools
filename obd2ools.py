@@ -30,14 +30,23 @@ class StoppableThread(threading.Thread):
 	def stop(self):
 		self.should_live = 0
 
+# open logfiles
+f_dbg = None
+f_log = None
+
+if dbg_logfile:
+	f_dbg = open(dbg_logfile, 'w')
+
+if data_logfile:
+	f_log = open(data_logfile, 'w')
 
 # run elm327 thread
-th_elm = elm327emu(sio_elm)
+th_elm = elm327emu(sio_elm, f_dbg)
 th_elm.pids_list = pids_list
 th_elm.start()
 
 # run reader thread
-th_rdr = elm327reader(sio_rdr)
+th_rdr = elm327reader(sio_rdr, f_log, f_dbg)
 th_rdr.import_pids(pids_list, selected_pids)
 th_rdr.readout_interval = interval
 th_rdr.start()
@@ -54,3 +63,12 @@ print('\nexiting...\n')
 # shutdown threads
 th_elm.stop()
 th_rdr.stop()
+
+th_elm.join()
+th_rdr.join()
+
+# close files
+if f_dbg:
+	f_dbg.close()
+if f_log:
+	f_log.close()

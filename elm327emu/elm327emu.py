@@ -12,10 +12,11 @@ class elm327emu(threading.Thread):
         self.header = 0x07E806
         self.timeout = 0
 
-    def __init__(self, stream):
+    def __init__(self, stream, debug_stream=None):
         super().__init__()
         self.should_live = 1
         self.sio = stream
+        self.dbg = debug_stream
         self.reset()
         self.pids_list = []
     
@@ -28,7 +29,9 @@ class elm327emu(threading.Thread):
                 continue
 
             # print command
-            print('recv: ' + cmd)
+            if self.dbg:
+                self.dbg.write('recv: ' + cmd + '\n')
+                self.dbg.flush()
 
             # default answer is empty
             ans = ''
@@ -82,7 +85,7 @@ class elm327emu(threading.Thread):
 
                     # process the list of pids
                     for pid in self.pids_list:
-                        print(pid[1])
+                        #print(pid[1])
                         if pid[0] == self.header and pid[1] == sub:
                             # prepare the reponse
                             ans = format(int('0x'+sub[:1], 16) | 4, 'X') + sub[1:] + pid[2]
@@ -94,7 +97,9 @@ class elm327emu(threading.Thread):
                             break
 
             # print response
-            print('  send: ' + ans)
+            if self.dbg:
+                self.dbg.write('  send: ' + ans + '\n')
+                self.dbg.flush()
 
             # new line character
             self.sio.write(ans+'\r\r>')
