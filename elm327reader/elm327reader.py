@@ -138,6 +138,7 @@ class elm327reader(threading.Thread):
                 data = self.read_pid(pid[0], pid[1])
 
                 if data == None:
+                    pid[8] = None
                     continue
 
                 # store value under pid[7]
@@ -152,7 +153,10 @@ class elm327reader(threading.Thread):
 
             for pid in self.pids_list:
                 try:
-                    val = format(pid[8], pid[5])
+                    if pid[8] != None:
+                        val = format(pid[8], pid[5])
+                    else:
+                        val = '--'
                     print('\t' + pid[3] + ':\t' + ('\t' if len(pid[3])<7 else '') + val + ' ' + pid[4])
                     if self.log:
                         self.log.write(',' + val)
