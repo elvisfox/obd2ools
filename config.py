@@ -3,8 +3,8 @@ import time
 from pids.nissan import *
 
 # use 'loop' to run with emulator
-port_name = 'loop'
-#port_name = 'COM10'
+#port_name = 'loop'
+port_name = 'COM10'
 baudrate = 115200
 
 pids_list = []
@@ -26,7 +26,7 @@ selected_pids = [
 	'Inj Pulse B1',
 	'Inj Pulse B2',
 	'Intake Air T',
-	'Intake Mf P',
+#	'Intake Mf P',
 	'Fuel T',
 	'Fuel Level',
 #	'H02 B1 S1',

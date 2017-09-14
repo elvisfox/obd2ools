@@ -22,16 +22,17 @@ class elm327reader(threading.Thread):
         while resp == '\r':
             resp = self.sio.readline(b'\r')
             self.dbg.write('  readline: ' + resp + ' (' + format(time.time() - t, '0.3f') + ' sec)\n')
+            try:
+                if resp[0] == '>':
+                    resp = resp[1:]
+            except:
+                pass
 
         # leave only part until \r
         resp = resp.split('\r')[0]
 
         # check for > at the beginning
-        try:
-            if resp[0] == '>':
-                resp = resp[1:]
-        except:
-            pass
+        
 
         if self.dbg:
             self.dbg.write('  resp: ' + resp + '\n')
@@ -129,7 +130,7 @@ class elm327reader(threading.Thread):
         if self.header == header:
             return True
 
-        resp = self.command_fast('AT SH ' + format(header & 0x000FFF, '03X'))
+        resp = self.command('AT SH ' + format(header & 0x000FFF, '03X'))
         if resp != 'OK':
             return False
 
@@ -144,7 +145,7 @@ class elm327reader(threading.Thread):
         t = time.time()
 
         # request pid
-        resp = self.command_fast(pid)
+        resp = self.command(pid+' 1')
 
         # debug output - time
         self.dbg.write('  spent ' + format(time.time() - t, '0.3f') + ' sec\n')
