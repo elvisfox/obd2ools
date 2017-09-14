@@ -4,12 +4,18 @@ import serial
 import io
 import threading
 import time
+import os
 
 from utils.serio import *
 from elm327emu.elm327emu import *
 from elm327reader.elm327reader import *
 
 from config import *
+
+# ANSI support for Windows
+if os.name == 'nt':
+	import colorama
+	colorama.init()
 
 # open logfiles
 f_dbg = None
