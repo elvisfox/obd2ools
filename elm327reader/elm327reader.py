@@ -108,7 +108,7 @@ class elm327reader(threading.Thread):
         if resp != 'OK':
             return False
 
-        resp = self.read_pid(0x07E806, '0100')
+        resp = self.read_pid(0x806, '0100')
         if resp == None:
             return False
 
@@ -130,7 +130,13 @@ class elm327reader(threading.Thread):
         if self.header == header:
             return True
 
-        resp = self.command('AT SH ' + format(header & 0x000FFF, '03X'))
+        cmd = 'AT SH ' + format(header, '03X')
+
+        if self.fast_mode:
+            resp = self.command_fast(cmd)
+        else:
+            resp = self.command(cmd)
+
         if resp != 'OK':
             return False
 
@@ -145,7 +151,10 @@ class elm327reader(threading.Thread):
         t = time.time()
 
         # request pid
-        resp = self.command(pid+' 1')
+        if self.fast_mode:
+            resp = self.command_fast(pid+' 1')
+        else:
+            resp = self.command(pid+' 1')
 
         # debug output - time
         self.dbg.write('  spent ' + format(time.time() - t, '0.3f') + ' sec\n')
@@ -175,6 +184,7 @@ class elm327reader(threading.Thread):
         self.dbg = debug_stream
         self.pids_list = []
         self.init_list = []
+        self.fast_mode = False
         self.readout_interval = 1
         self.reset()
     

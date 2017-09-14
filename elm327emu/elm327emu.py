@@ -9,7 +9,7 @@ class elm327emu(threading.Thread):
         # OBD state defaults
         self.protocol = use_protocol
         self.headers_on = 1
-        self.header = 0x07E806
+        self.header = 0x806
         self.timeout = 0
 
     def __init__(self, stream, debug_stream=None):
@@ -66,7 +66,7 @@ class elm327emu(threading.Thread):
                     print('  Headers_on changed to '+str(self.headers_on))
                     ans = 'OK'
                 elif sub[:4] == ' SH ':
-                    self.header = (self.header & 0xFFF000) | (int('0x'+sub[4:], 16) & 0x000FFF)
+                    self.header = int(sub[4:], 16)
                     print('  Header changed to '+hex(self.header))
                     ans = 'OK'
                 else:
@@ -80,8 +80,12 @@ class elm327emu(threading.Thread):
                     # default answer is now 'NO DATA'
                     ans = 'NO DATA'
 
-                    # remove \r
-                    sub = cmd[:-1]
+                    # remove \r and spaces
+                    sub = cmd[:-1].replace(' ', '')
+
+                    # if odd number of digits, skip last one (expected number of responses)
+                    if len(sub)%2 == 1:
+                        sub = sub[:-1]
 
                     # process the list of pids
                     for pid in self.pids_list:
