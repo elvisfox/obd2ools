@@ -42,12 +42,13 @@ if port_name == 'loop':
 	th_elm.pids_list = pids_list
 	th_elm.start()
 else:
-	ser = serial.Serial(port_name, timeout=0.1)
+	ser = serial.Serial(port_name, timeout=1)
 	sio_rdr = SerIO(ser, ser, b'>')
 
 # run reader thread
 th_rdr = elm327reader(sio_rdr, f_log, f_dbg)
 th_rdr.import_pids(pids_list, selected_pids)
+th_rdr.init_list = init_list
 th_rdr.readout_interval = interval
 th_rdr.start()
 

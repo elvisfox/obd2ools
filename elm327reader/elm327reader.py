@@ -30,6 +30,11 @@ class elm327reader(threading.Thread):
         self.header = 0
 
     def init(self):
+
+        resp = self.command('ATZ')          # Reset
+        #if resp != 'ELM327 v1.5':
+        #    return False
+
         resp = self.command('ATE0')         # Echo Off
         #if resp != 'OK':
         #    return False
@@ -38,8 +43,12 @@ class elm327reader(threading.Thread):
         #if resp != 'OK':
         #    return False 
 
-        resp = self.command('ATZ')          # Reset
+        resp = self.command('ATI')          # Reset
         if resp != 'ELM327 v1.5':
+            return False
+
+        resp = self.command('ATS0')         # Spaces off
+        if resp != 'OK':
             return False
 
         resp = self.command('ATH0')         # Headers off
@@ -64,6 +73,10 @@ class elm327reader(threading.Thread):
         resp = self.read_pid(0x07E806, '0100')
         if resp == None:
             return False
+
+        for pid in self.init_list:
+            if self.read_pid(pid[0], pid[1]) == None:
+                return False
 
         return True
 
@@ -103,7 +116,12 @@ class elm327reader(threading.Thread):
         if addr != exp_addr:
             return None
 
-        return int(data, 16)
+        try:
+            result = int(data, 16)
+        except:
+            result = 0
+
+        return result
 
     def __init__(self, stream, log_stream=None, debug_stream=None):
         super().__init__()
@@ -112,6 +130,7 @@ class elm327reader(threading.Thread):
         self.log = log_stream
         self.dbg = debug_stream
         self.pids_list = []
+        self.init_list = []
         self.readout_interval = 1
         self.reset()
     

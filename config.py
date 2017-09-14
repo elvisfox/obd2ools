@@ -3,10 +3,14 @@ import time
 from pids.nissan import *
 
 # use 'loop' to run with emulator
-port_name = 'loop'
+port_name = 'loop' #'COM10'
 
 pids_list = []
 pids_list = pids_list + nissan_pids
+
+init_list = [
+	[0x07E7E0, '10C0']
+]
 
 selected_pids = [
 	'RPM',

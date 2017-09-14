@@ -7,6 +7,7 @@ def linear(data, gain, offset):
 #	[header,	pid,		example,	short name,		units,	format,	func,	[params]],
 nissan_pids = [
 	[0x07E806,	'0100',		'00000000',	'Sprt PIDs',	'deg',	'0.3f',	linear,	[0.0, 0]	],
+	[0x07E7E0,	'10C0',		'',			'Nissan Init',	'',		'0.0f',	linear,	[0.0, 0]	],
 	[0x07E7E0,	'221106',	'0000',		'Intake Air T',	'degC',	'0.3f',	linear,	[1.0, 50]	],		# !!! 
 	[0x07E7E0,	'22110A',	'FF',		'Ign Adv',		'deg',	'0.3f',	linear,	[-1.0, 110] ],		# Ignition Timing Advance Angle, 8-bit unsigned, 0 = 110deg, 1 = -1.0deg
 	[0x07E7E0,	'22110E',	'0000',		'Intake Mf P',	'bar',	'0.3f',	linear,	[0.01, 0]	],		# !!! Intake Manifold Pressure
