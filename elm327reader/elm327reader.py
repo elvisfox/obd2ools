@@ -5,6 +5,40 @@ import datetime
 
 class elm327reader(threading.Thread):
 
+    def command_fast(self, cmd):
+
+        t = time.time()
+        # send a command
+        self.sio.write(cmd+'\r')
+        #self.sio.flush()
+
+        if self.dbg:
+            self.dbg.write('fast: ' + cmd + '\n')
+            self.dbg.flush()
+
+        self.dbg.write('  sent in ' + format(time.time() - t, '0.3f') + ' sec\n')
+
+        resp = '\r'
+        while resp == '\r':
+            resp = self.sio.readline(b'\r')
+            self.dbg.write('  readline: ' + resp + ' (' + format(time.time() - t, '0.3f') + ' sec)\n')
+
+        # leave only part until \r
+        resp = resp.split('\r')[0]
+
+        # check for > at the beginning
+        try:
+            if resp[0] == '>':
+                resp = resp[1:]
+        except:
+            pass
+
+        if self.dbg:
+            self.dbg.write('  resp: ' + resp + '\n')
+            self.dbg.flush()
+
+        return resp
+
     def command(self, cmd):
         # send a command
         self.sio.write(cmd+'\r')
@@ -18,6 +52,8 @@ class elm327reader(threading.Thread):
 
         # leave only part until \r
         resp = resp.split('\r')[0]
+
+        # check for > at the beginning
 
         if self.dbg:
             self.dbg.write('  got: ' + resp + '\n')
@@ -34,6 +70,7 @@ class elm327reader(threading.Thread):
         resp = self.command('ATZ')          # Reset
         #if resp != 'ELM327 v1.5':
         #    return False
+        time.sleep(1.5)
 
         resp = self.command('ATE0')         # Echo Off
         #if resp != 'OK':
@@ -59,15 +96,15 @@ class elm327reader(threading.Thread):
         if resp != 'OK':
             return False
 
-        resp = self.command('ATST62')       # Timeout 4*62 ms
-        if resp != 'OK':
-            return False
-
-        resp = self.command('ATAT1')        # Adaptive Timing Auto 1
-        if resp != 'OK':
-            return False
-
         if not self.set_protocol(6):
+            return False
+
+        resp = self.command('ATST10')       # Timeout 4*25 ms
+        if resp != 'OK':
+            return False
+
+        resp = self.command('ATAT0')        # Adaptive Timing Auto 1
+        if resp != 'OK':
             return False
 
         resp = self.read_pid(0x07E806, '0100')
@@ -92,7 +129,7 @@ class elm327reader(threading.Thread):
         if self.header == header:
             return True
 
-        resp = self.command('AT SH ' + format(header & 0x000FFF, '03X'))
+        resp = self.command_fast('AT SH ' + format(header & 0x000FFF, '03X'))
         if resp != 'OK':
             return False
 
@@ -103,8 +140,14 @@ class elm327reader(threading.Thread):
         if not self.set_header(header):
             return None
 
+        # measure time
+        t = time.time()
+
         # request pid
-        resp = self.command(pid)
+        resp = self.command_fast(pid)
+
+        # debug output - time
+        self.dbg.write('  spent ' + format(time.time() - t, '0.3f') + ' sec\n')
 
         # split response into address and data
         ln = len(pid)

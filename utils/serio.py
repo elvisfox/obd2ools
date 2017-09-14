@@ -38,10 +38,12 @@ class SerIO():
         #print('wrote '+format(n,'d')+' bytes: ' + data + '\n')
         self.w_stream.flush()
 
-    def readline(self):
+    def readline(self, newline = None):
+        if newline == None:
+            newline = self.newline
         data = b''
         c = []
-        while c != b'' and c != self.newline:
+        while c != b'' and c != newline:
             c = self.r_stream.read(1)
             data = data + c
 

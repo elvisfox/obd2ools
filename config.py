@@ -3,7 +3,9 @@ import time
 from pids.nissan import *
 
 # use 'loop' to run with emulator
-port_name = 'loop' #'COM10'
+port_name = 'loop'
+#port_name = 'COM10'
+baudrate = 115200
 
 pids_list = []
 pids_list = pids_list + nissan_pids
@@ -27,22 +29,23 @@ selected_pids = [
 	'Intake Mf P',
 	'Fuel T',
 	'Fuel Level',
-	'H02 B1 S1',
-	'H02 B2 S1',
-	'H02 B1 S2',
-	'H02 B2 S2',
-	'TPS 1',
-	'TPS 2',
+#	'H02 B1 S1',
+#	'H02 B2 S1',
+#	'H02 B1 S2',
+#	'H02 B2 S2',
+	'VVT Oil T',
+#	'TPS 1',
+#	'TPS 2',
 	'Fuel Pressure',
 	'Acc Pedal S1',
-	'Acc Pedal S2',
+#	'Acc Pedal S2',
 	'TPS S1',
 	'TPS S2',
 	'Car Speed',
 ]
 
 # update interval
-interval = 0.2
+interval = 0.01
 
 # debug log
 dbg_logfile = 'logs/debug_' + time.strftime('%Y-%m-%d_%H-%M-%S') + '.txt'

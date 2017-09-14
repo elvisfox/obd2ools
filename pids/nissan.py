@@ -8,11 +8,11 @@ def linear(data, gain, offset):
 nissan_pids = [
 	[0x07E806,	'0100',		'00000000',	'Sprt PIDs',	'deg',	'0.3f',	linear,	[0.0, 0]	],
 	[0x07E7E0,	'10C0',		'',			'Nissan Init',	'',		'0.0f',	linear,	[0.0, 0]	],
-	[0x07E7E0,	'221106',	'0000',		'Intake Air T',	'degC',	'0.3f',	linear,	[1.0, 50]	],		# !!! 
+	[0x07E7E0,	'221106',	'0000',		'Intake Air T',	'degC',	'0.3f',	linear,	[1.0, -50]	],		# !!! 
 	[0x07E7E0,	'22110A',	'FF',		'Ign Adv',		'deg',	'0.3f',	linear,	[-1.0, 110] ],		# Ignition Timing Advance Angle, 8-bit unsigned, 0 = 110deg, 1 = -1.0deg
 	[0x07E7E0,	'22110E',	'0000',		'Intake Mf P',	'bar',	'0.3f',	linear,	[0.01, 0]	],		# !!! Intake Manifold Pressure
 	[0x07E7E0,	'221110',	'01',		'EVAP Purge Duty', '%',	'0.3f',	linear,	[0.5, 0]	],		# EVAP Purge Duty Cycle, 1 = 0.5%
-	[0x07E7E0,	'221111',	'2D',		'Fuel T',		'degC',	'0.3f',	linear,	[1.0, 50]	],		# Fuel Temperature, offset=0x32 (50degC), 1 = 1degC
+	[0x07E7E0,	'221111',	'2D',		'Fuel T',		'degC',	'0.3f',	linear,	[1.0, -50]	],		# Fuel Temperature, offset=0x32 (50degC), 1 = 1degC
 	[0x07E7E0,	'221114',	'00',		'Fuel Level',	'%',	'0.0f',	linear,	[1.0, 0]	],		# !!! 
 	[0x07E7E0,	'221118',	'00',		'H02 B1 S1',	'V',	'0.0f',	linear,	[0.01, 0]	],		# !!! 
 	[0x07E7E0,	'221119',	'00',		'H02 B2 S1',	'V',	'0.0f',	linear,	[0.01, 0]	],		# !!! 
@@ -20,7 +20,7 @@ nissan_pids = [
 	[0x07E7E0,	'22111B',	'00',		'H02 B2 S2',	'V',	'0.0f',	linear,	[0.01, 0]	],		# !!! 
 	[0x07E7E0,	'22111C',	'00',		'TPS 1',		'V',	'0.0f',	linear,	[0.01, 0]	],		# !!! 
 	[0x07E7E0,	'22111D',	'00',		'TPS 2',		'V',	'0.0f',	linear,	[0.01, 0]	],		# !!! 
-	[0x07E7E0,	'22111F',	'76',		'VVT Oil T',	'degC',	'0.3f',	linear,	[1.0, 50]	],		# VVT Oil Temperature, offset=0x32 (50degC), 1 = 1degC
+	[0x07E7E0,	'22111F',	'76',		'VVT Oil T',	'degC',	'0.3f',	linear,	[1.0, -50]	],		# VVT Oil Temperature, offset=0x32 (50degC), 1 = 1degC
 #	[0x07E7E0,	'221186',	'7F2212',	'',				'deg',	'0.3f',	linear,	[-1.0, 110] ],		# ?? always answers 7F2212 w/o command header
 	[0x07E7E0,	'221123',	'64',		'STFT B1',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B1), offset=0x64, 1 = 1%
 	[0x07E7E0,	'221124',	'84',		'STFT B2',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B2), offset=0x64, 1 = 1%

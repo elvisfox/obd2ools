@@ -42,7 +42,7 @@ if port_name == 'loop':
 	th_elm.pids_list = pids_list
 	th_elm.start()
 else:
-	ser = serial.Serial(port_name, timeout=1)
+	ser = serial.Serial(port_name, timeout=0.2, baudrate=baudrate)
 	sio_rdr = SerIO(ser, ser, b'>')
 
 # run reader thread
