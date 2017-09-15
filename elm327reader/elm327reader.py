@@ -184,8 +184,10 @@ class elm327reader(threading.Thread):
         self.dbg = debug_stream
         self.pids_list = []
         self.init_list = []
+        self.gauges = []
         self.fast_mode = False
         self.readout_interval = 1
+        self.init_time = time.time()
         self.reset()
     
     def run(self):
@@ -197,7 +199,7 @@ class elm327reader(threading.Thread):
         if self.log:
             self.log.write('time')
             for pid in self.pids_list:
-                self.log.write(',' + pid[3] + ' [' + pid[4] + ']')
+                self.log.write(',' + 'Time [s]' + ',' + pid[3] + ' [' + pid[4] + ']')
             self.log.write('\n')
             self.log.flush()
 
@@ -205,7 +207,7 @@ class elm327reader(threading.Thread):
         while self.should_live == 1:
 
             # get current time with milliseconds
-            stamp = datetime.datetime.utcnow().strftime('%H:%M:%S.%f')[:-3]
+            stamp = format(time.time() - self.init_time, '0.3f')  #datetime.datetime.utcnow().strftime('%H:%M:%S.%f')[:-3]
 
             for pid in self.pids_list:
                 data = self.read_pid(pid[0], pid[1])
@@ -216,10 +218,11 @@ class elm327reader(threading.Thread):
 
                 # store value under pid[7]
                 pid[8] = pid[6](data, *pid[7])
+                pid[9] = time.time() - self.init_time
 
             #clear screen
             print('\x1b[2J\x1b[H')
-            print('\tTime:\t\t' + stamp)
+            print('\tTime:\t\t' + stamp + ' s')
 
             if self.log:
                 self.log.write(stamp)
@@ -232,7 +235,13 @@ class elm327reader(threading.Thread):
                         val = '--'
                     print('\t' + pid[3] + ':\t' + ('\t' if len(pid[3])<7 else '') + val + ' ' + pid[4])
                     if self.log:
-                        self.log.write(',' + val)
+                        self.log.write(',' + format(pid[9], '0.3f') + ',' + val)
+
+                    # some shit
+                    for g in self.gauges:
+                        if pid[3] == g[0]:
+                            num = int(min((pid[8] - g[1]) * 60 // g[2], 60))
+                            print('    [' + '#' * num + ' ' * (60-num) + ']')
                 except:
                     pass
 
@@ -240,7 +249,8 @@ class elm327reader(threading.Thread):
                 self.log.write('\n')
                 self.log.flush()
 
-            time.sleep(self.readout_interval)
+            if self.readout_interval:
+                time.sleep(self.readout_interval)
 
         # protocol close
         self.command('ATPC')
@@ -249,9 +259,11 @@ class elm327reader(threading.Thread):
         self.should_live = 0
 
     def import_pids(self, pids_list, selected_pids):
-        for pid in pids_list:
-            if pid[3] in selected_pids:
-                cpy = list(pid)
-                cpy.append(0)
-                self.pids_list.append(cpy)
+        for pid_name in selected_pids:
+            for pid in pids_list:
+                if pid[3] == pid_name:
+                    cpy = list(pid)
+                    cpy.append(0)
+                    cpy.append(0)
+                    self.pids_list.append(cpy)
 

@@ -52,6 +52,7 @@ th_rdr.import_pids(pids_list, selected_pids)
 th_rdr.init_list = init_list
 th_rdr.readout_interval = interval
 th_rdr.fast_mode = fast_mode
+th_rdr.gauges = gauges
 th_rdr.start()
 
 # loop until ctrl+c
