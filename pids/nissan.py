@@ -40,11 +40,11 @@ nissan_pids = [
  	[0x7E0,	'221208',	'2062',		'Fuel Base',	'ms',	'0.3f',	linear,	[0.001, 0]	],		# Fuel Base Pulse Width, 1000 = 1ms
  	[0x7E0,	'221209',	'01DA',		'Mass Air Flow','gm/s',	'0.2f',	linear,	[0.01, 0]	],		# Mass Air Flow, 100 = 1gm/s
  	[0x7E0,	'22120C',	'0000',		'Fuel Pressure','bar',	'0.2f',	linear,	[0.01, 0]	],		# !!!
- 	[0x7E0,	'22120D',	'01DA',		'Acc Pedal S1',	'V',	'0.2f',	linear,	[0.01, 0]	],		# !!!
- 	[0x7E0,	'22120E',	'01DA',		'Acc Pedal S2',	'V',	'0.2f',	linear,	[0.01, 0]	],		# !!!
- 	[0x7E0,	'22120F',	'01DA',		'TPS S1',		'V',	'0.2f',	linear,	[0.01, 0]	],		# !!!
- 	[0x7E0,	'221210',	'01DA',		'TPS S2',		'V',	'0.2f',	linear,	[0.01, 0]	],		# !!!
- 	[0x7E0,	'221214',	'01DA',		'Vacuum',		'V',	'0.2f',	linear,	[0.01, 0]	],		# !!!
+ 	[0x7E0,	'22120D',	'01DA',		'Acc Pedal S1',	'V',	'0.2f',	linear,	[0.005, 0]	],		# 
+ 	[0x7E0,	'22120E',	'01DA',		'Acc Pedal S2',	'V',	'0.2f',	linear,	[0.005, 0]	],		# 
+ 	[0x7E0,	'22120F',	'01DA',		'TPS S1',		'V',	'0.2f',	linear,	[0.005, 0]	],		# 
+ 	[0x7E0,	'221210',	'01DA',		'TPS S2',		'V',	'0.2f',	linear,	[0.005, 0]	],		# 
+ 	[0x7E0,	'221214',	'01DA',		'Vacuum',		'V',	'0.2f',	linear,	[0.005, 0]	],		# !!!
  	[0x7E0,	'22121A',	'01DA',		'Car Speed',	'km/h',	'0.1f',	linear,	[0.1, 0]	],		#
 
 	[0x7E0,	'22122B',	'0064',		'',				'deg',	'0.3f',	linear,	[-1.0, 110]	],		# Cruise Control Target, ???
