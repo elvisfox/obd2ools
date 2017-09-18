@@ -5,6 +5,8 @@ import io
 import threading
 import time
 import os
+import sys
+import utils.save_pids
 
 from utils.serio import *
 from elm327emu.elm327emu import *
@@ -46,14 +48,20 @@ else:
 	ser.read(1000)
 	sio_rdr = SerIO(ser, ser, b'>')
 
-# run reader thread
+# init reader
 th_rdr = elm327reader(sio_rdr, f_log, f_dbg)
 th_rdr.import_pids(pids_list, selected_pids)
 th_rdr.init_list = init_list
 th_rdr.readout_interval = interval
 th_rdr.fast_mode = fast_mode
 th_rdr.gauges = gauges
-th_rdr.start()
+
+# run reader thread, or execute specific command
+if len(sys.argv) >= 2 and sys.argv[1] == 'scan':
+	scanned_pids = th_rdr.scan_pids(parsed_pids)
+	utils.save_pids.generate('scanned', scanned_pids)
+else:
+	th_rdr.start()
 
 # loop until ctrl+c
 try:
@@ -66,7 +74,10 @@ print('\nexiting...\n')
 
 # shutdown threads
 th_rdr.stop()
-th_rdr.join()
+try:
+	th_rdr.join()
+except:
+	pass
 
 if th_elm:
 	th_elm.stop()

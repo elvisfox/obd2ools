@@ -1,10 +1,11 @@
 import time
 
 from pids.nissan import *
+from pids.parsed import *
 
 # use 'loop' to run with emulator
-#port_name = 'loop'
-port_name = 'COM10'
+port_name = 'loop'
+#port_name = 'COM10'
 baudrate = 115200
 
 fast_mode = True

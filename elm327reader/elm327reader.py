@@ -255,6 +255,38 @@ class elm327reader(threading.Thread):
         # protocol close
         self.command('ATPC')
 
+    def scan_pids(self, pids_list):
+        # init
+        if not self.init():
+            return
+        # prepare empty list
+        sc_pids = list()
+        # readout pids from the list
+        for pid in pids_list:
+            if not self.set_header(pid[0]):
+                return None
+
+            # request pid
+            if self.fast_mode:
+                resp = self.command_fast(pid[1]+' 1')
+            else:
+                resp = self.command(pid[1]+' 1')
+
+            # print response
+            print(pid[3] + ' - ' + resp)
+
+            ln = len(pid[1])
+            addr = resp[:ln]
+            data = resp[ln:]
+
+            # Check address
+            exp_addr = format(int(pid[1][:1], 16) | 4, 'X') + pid[1][1:]
+            if addr == exp_addr:
+                pid[2] = data
+                sc_pids.append(pid)
+
+        return sc_pids
+
     def stop(self):
         self.should_live = 0
 
