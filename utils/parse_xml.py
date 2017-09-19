@@ -12,10 +12,10 @@ def process_dict(pid):
     l.append(0x7E0)
     l.append(pid['cmd'].replace(' ', ''))
     l.append('00')
-    if pid['comment'] != b'-':
-        l.append(pid['cmd'].replace(' ', ''))
-    else:
+    if pid['comment'] != '-':
         l.append(pid['comment'])
+    else:
+        l.append(pid['cmd'].replace(' ', ''))
     l.append(pid['unit'])
     l.append('0.3f')
     l.append('linear')

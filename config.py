@@ -8,7 +8,7 @@ port_name = 'loop'
 #port_name = 'COM10'
 baudrate = 115200
 
-fast_mode = True
+fast_mode = False
 
 pids_list = []
 pids_list = pids_list + nissan_pids
@@ -18,46 +18,28 @@ init_list = [
 ]
 
 selected_pids = [
-#	'Acc Pedal S1',
 	'Acc Pedal S2',
-#	'TPS S1',
-#	'TPS S2',
 	'Mass Air Flow',
 	'Inj Pulse B1',
-#	'Inj Pulse B2',
-#	'Fuel Base',
+	'Inj Pulse B2',
+	'Fuel Base',
 	'RPM',
-#	'STFT B1',
-#	'STFT B2',
-#	'LTFT B1',
-#	'LTFT B2',
-#	'MAF B1',
-#	'MAF B2',
-
-#	'A/F Ratio',
-#	'Vacuum',
-#	'MAP',
-#	'Intake Air T',
-#	'Intake Mf P',
-#	'Fuel T',
-#	'Fuel Level',
-#	'H02 B1 S1',
-#	'H02 B2 S1',
-#	'H02 B1 S2',
-#	'H02 B2 S2',
-#	'VVT Oil T',
-#	'TPS 1',
-#	'TPS 2',
-#	'Fuel Pressure',
-
-
-#	'Car Speed',
+	'A/F S1 (B1)',
+	'A/F S1 (B2)',
+	'Engine Load',
+	'H02S2 (B1)',
+	'H02S2 (B2)',
 ]
 
 gauges = [
-	['RPM', 0, 3000],
-	['Acc Pedal S2', 1.4, 6.0],
+	['RPM', 0, 4000],
+	['Acc Pedal S2', 0.7, 4.2],
 	['TPS S1', 0, 5.0],
+	['A/F S1 (B1)', 0, 5.0],
+	['A/F S1 (B2)', 0, 5.0],
+	['Engine Load', 0, 100],
+	['H02S2 (B1)', 0, 1.0],
+	['H02S2 (B2)', 0, 1.0],
 ]
 
 # update interval
