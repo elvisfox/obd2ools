@@ -243,7 +243,7 @@ class elm327reader(threading.Thread):
                     # some shit
                     for g in self.gauges:
                         if pid[3] == g[0]:
-                            num = int(min((pid[8] - g[1]) * 60 // (g[2] - g[1]), 60))
+                            num = int(max(min((pid[8] - g[1]) * 60 // (g[2] - g[1]), 60), 0))
                             print('    [' + '#' * num + ' ' * (60-num) + ']')
                 except:
                     pass
