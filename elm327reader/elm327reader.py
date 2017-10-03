@@ -40,7 +40,7 @@ class elm327reader(threading.Thread):
 
         return resp
 
-    def command(self, cmd):
+    def command(self, cmd, wait=0):
         # send a command
         self.sio.write(cmd+'\r')
         #self.sio.flush()
@@ -48,6 +48,9 @@ class elm327reader(threading.Thread):
         if self.dbg:
             self.dbg.write('cmd: ' + cmd + '\n')
             self.dbg.flush()
+
+        if wait > 0:
+            time.sleep(wait)
 
         resp = self.sio.readline()
 
@@ -68,10 +71,10 @@ class elm327reader(threading.Thread):
 
     def init(self):
 
-        resp = self.command('ATZ')          # Reset
+        resp = self.command('ATZ', 1.2)          # Reset
         #if resp != 'ELM327 v1.5':
         #    return False
-        time.sleep(1.5)
+        #time.sleep(1.5)
 
         resp = self.command('ATE0')         # Echo Off
         #if resp != 'OK':
