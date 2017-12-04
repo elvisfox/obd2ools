@@ -39,6 +39,8 @@ nissan_pids = [
 	[0x7e0,	'221163',	'81',		'INT/V TIM B2',	'°CA',	'0.3f',	linear,	[0.5, -64]	],
 	[0x7e0,	'221164',	'80',		'EXH/V TIM B1',	'°CA',	'0.3f',	linear,	[0.5, -64]	],
 	[0x7e0,	'221165',	'7F',		'EXH/V TIM B2',	'°CA',	'0.3f',	linear,	[0.5, -64]	],
+	[0x7e0,	'221179',	'BB',		'AC EVA TEMP',	'°C',	'0.1f',	linear,	[0.33, -30]	],
+	[0x7e0,	'22117A',	'63',		'AC EVA TARGET','°C',	'0.1f',	linear,	[0.33, -30]	],
  	[0x7E0,	'221201',	'0050',		'RPM',			'rpm',	'0.0f',	linear,	[12.5,	0]	],		# Engine RPM, 1 = 12.5 rpm
  	[0x7E0,	'221204',	'00E4',		'MAF B1',		'V',	'0.2f',	linear,	[0.005, 0]	],		# MAF Voltage (B1), 1 = 5mV
  	[0x7E0,	'221205',	'01D8',		'MAF B2',		'V',	'0.2f',	linear,	[0.005, 0]	],		# MAF Voltage (B2), 1 = 5mV
