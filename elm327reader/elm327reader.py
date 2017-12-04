@@ -179,6 +179,20 @@ class elm327reader(threading.Thread):
 
         return result
 
+    def read_Vbat(self):
+        # measure time
+        t = time.time()
+
+        if self.fast_mode:
+            resp = self.command_fast('AT RV')
+        else:
+            resp = self.command('AT RV')
+
+        # debug output - time
+        self.dbg.write('  spent ' + format(time.time() - t, '0.3f') + ' sec\n')
+
+        return resp
+
     def __init__(self, stream, log_stream=None, debug_stream=None):
         super().__init__()
         self.should_live = 1
@@ -191,6 +205,7 @@ class elm327reader(threading.Thread):
         self.fast_mode = False
         self.readout_interval = 1
         self.init_time = time.time()
+        self.monitor_Vbat = False
         self.reset()
     
     def run(self):
@@ -201,6 +216,8 @@ class elm327reader(threading.Thread):
         # log header
         if self.log:
             self.log.write('time')
+            if self.monitor_Vbat:
+                self.log.write(',Vbat')
             for pid in self.pids_list:
                 self.log.write(',' + 'Time [s]' + ',' + pid[3] + ' [' + pid[4] + ']')
             self.log.write('\n')
@@ -223,12 +240,21 @@ class elm327reader(threading.Thread):
                 pid[8] = pid[6](data, *pid[7])
                 pid[9] = time.time() - self.init_time
 
+            # read battery voltage if requested
+            if self.monitor_Vbat:
+                vbat = self.read_Vbat()
+
             #clear screen
             print('\x1b[2J\x1b[H')
             print('\tTime:\t\t' + stamp + ' s')
 
             if self.log:
                 self.log.write(stamp)
+
+            # print battery voltage
+            if self.monitor_Vbat:
+                print('\tBattery:\t' + vbat)
+                self.log.write(',' + vbat)
 
             for pid in self.pids_list:
                 try:

@@ -69,6 +69,8 @@ class elm327emu(threading.Thread):
                     self.header = int(sub[4:], 16)
                     print('  Header changed to '+hex(self.header))
                     ans = 'OK'
+                elif sub == ' RV':
+                    ans = '14.4V'
                 else:
                     print('  Unsupported command!')
                     ans = 'ERROR'

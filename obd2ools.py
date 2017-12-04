@@ -55,6 +55,7 @@ th_rdr.init_list = init_list
 th_rdr.readout_interval = interval
 th_rdr.fast_mode = fast_mode
 th_rdr.gauges = gauges
+th_rdr.monitor_Vbat = monitor_Vbat
 
 # run reader thread, or execute specific command
 if len(sys.argv) >= 2 and sys.argv[1] == 'scan':

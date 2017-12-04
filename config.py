@@ -9,6 +9,7 @@ port_name = 'COM10'
 baudrate = 115200
 
 fast_mode = False
+monitor_Vbat = True
 
 pids_list = []
 pids_list = pids_list + nissan_pids
@@ -28,7 +29,8 @@ selected_pids = [
 #	'Fuel Base',
 	'RPM',
 	'Ign Adv',
-	'Ign Adv Adj',
+	'Engine Load',
+#	'Ign Adv Adj',
 #	'TPS S1 (B1)',
 #	'TPS S2 (B1)',
 #	'A/F Ratio',
@@ -36,32 +38,33 @@ selected_pids = [
 #	'A/F Adj (B2)',
 #	'TPS S1 (B2)',
 #	'TPS S2 (B2)',
-#	'A/F S1 (B1)',
-#	'A/F S1 (B2)',
-	'STFT B1',
-	'STFT B2',
+	'A/F S1 (B1)',
+	'A/F S1 (B2)',
+#	'STFT B1',
+#	'STFT B2',
 #	'A/F S1 HTR(B1)',
 #	'A/F S1 HTR(B2)',
-	'LTFT B1',
-	'LTFT B2',
+#	'LTFT B1',
+#	'LTFT B2',
 #	'Car Speed',
-#	'INT/V TIM B1',
-#	'INT/V TIM B2',
-#	'EXH/V TIM B1',
-#	'EXH/V TIM B2',
-#	'INT/V SOL(B1)',
-#	'INT/V SOL(B2)',
-#	'VTC DTY EX B1',
-#	'VTC DTY EX B2',
+	'INT/V TIM B1',
+	'INT/V TIM B2',
+	'EXH/V TIM B1',
+	'EXH/V TIM B2',
+	'INT/V SOL(B1)',
+	'INT/V SOL(B2)',
+	'VTC DTY EX B1',
+	'VTC DTY EX B2',
 #	'Engine Load',
-#	'H02S2 (B1)',
-#	'H02S2 (B2)',
-	'Current DTC',
+	'H02S2 (B1)',
+	'H02S2 (B2)',
+#	'Current DTC',
 #	'Coolant T',
 #	'Intake Air T',
 #	'VVT Oil T',
 #	'CO ADJUSTMENT',
-	'SRT STATUS',
+#	'SRT STATUS',
+	'BAT CUR SEN',
 ]
 
 gauges = [
@@ -89,6 +92,7 @@ gauges = [
 	['Inj Pulse B2', 0, 10],
 	['A/F S1 HTR(B1)', 0, 100],
 	['A/F S1 HTR(B2)', 0, 100],
+	['BAT CUR SEN', 0, 5.0],
 ]
 
 # update interval
