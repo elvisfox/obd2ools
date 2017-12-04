@@ -3,7 +3,11 @@
 def linear(data, gain, offset):
 	return data * gain + offset
 
-
+def signed(data, bits, gain):
+	sd = data
+	if data > (1 << (bits-1)):
+		sd -= 1 << bits;
+	return sd * gain
 
 #	 0			1			2			3				4		5		6		7
 #	[header, pid,		example,	short name,		units,	format,	func,	[params]],
@@ -20,10 +24,10 @@ nissan_pids = [
 	[0x7E0,	'22111A',	'1C',		'H02S2 (B1)',	'V',	'0.2f',	linear,	[0.01, 0]	],		# 
 	[0x7E0,	'22111B',	'1C',		'H02S2 (B2)',	'V',	'0.2f',	linear,	[0.01, 0]	],		# 
 	[0x7E0,	'22111F',	'76',		'VVT Oil T',	'°C',	'0.3f',	linear,	[1.0, -50]	],		# VVT Oil Temperature, offset=0x32 (50degC), 1 = 1degC
-	[0x7E0,	'221123',	'44',		'STFT B1',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B1), offset=0x64, 1 = 1%
-	[0x7E0,	'221124',	'84',		'STFT B2',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B2), offset=0x64, 1 = 1%
-	[0x7E0,	'221125',	'64',		'LTFT B1',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B1), offset=0x64, 1 = 1%
-	[0x7E0,	'221126',	'84',		'LTFT B2',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B2), offset=0x64, 1 = 1%
+	[0x7E0,	'221123',	'65',		'STFT B1',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B1), offset=0x64, 1 = 1%
+	[0x7E0,	'221124',	'67',		'STFT B2',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B2), offset=0x64, 1 = 1%
+	[0x7E0,	'221125',	'6A',		'LTFT B1',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B1), offset=0x64, 1 = 1%
+	[0x7E0,	'221126',	'6C',		'LTFT B2',		'%',	'0.0f',	linear,	[1.0, -100]	],		# A/F Ratio Adjustment (B2), offset=0x64, 1 = 1%
 #	[0x7e0,	'22112D',	'00',		'Ign Adv Adj',	'°',	'0.0f',	linear,	[1.0,	0]	],
 	[0x7E0,	'221134',	'84',		'A/F Ratio',	'',		'0.0f',	linear,	[1.0,	0]	],		# 
 	[0x7E0,	'221135',	'7F',		'INT/V TIM B1',	'°CA',	'0.1f',	linear,	[0.5, -64]	],		# Camshaft Advance Angle (B1), 7-bit signed, 0 = 0deg, 1 = +0.5deg
@@ -53,8 +57,8 @@ nissan_pids = [
 	[0x7e0,	'22122F',	'0000',		'VTC DTY EX B1','%',	'0.3f',	linear,	[3200/32768, 0]],
 	[0x7e0,	'221230',	'0000',		'VTC DTY EX B2','%',	'0.3f',	linear,	[3200/32768, 0]],
 	[0x7e0,	'221246',	'01F7',		'BAT CUR SEN',	'V',	'0.3f',	linear,	[0.005, 0]	],
-	[0x7e0,	'221249',	'FFEB',		'A/F Adj (B1)',	'',		'0.2f',	linear,	[0.02,	0]	],		#
-	[0x7e0,	'22124A',	'FFE7',		'A/F Adj (B2)',	'',		'0.2f',	linear,	[0.02,	0]	],		#
+	[0x7e0,	'221249',	'FFEB',		'A/F Adj (B1)',	'%',	'0.1f',	signed,	[16, 0.2]	],		#
+	[0x7e0,	'22124A',	'FFE7',		'A/F Adj (B2)',	'%',	'0.1f',	signed,	[16, 0.2]	],		#
 	[0x7e0,	'22124B',	'006E',		'TPS S1 (B2)',	'V',	'0.2f',	linear,	[0.005,	0]	],		#
 	[0x7e0,	'22124C',	'006D',		'TPS S2 (B2)',	'V',	'0.2f',	linear,	[0.005,	0]	],		#
 	[0x7E0,	'22122B',	'0064',		'Cruise Tgt',	'km/h',	'0.1f',	linear,	[0.1,	0]	],		# Cruise Control Target
